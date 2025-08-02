@@ -26,13 +26,34 @@ class ServiceController extends Controller
             'price' => 'required|numeric'
         ]);
 
+        $request->merge(['status' => 1]);
+
         return Service::create($request->all());
     }
 
     public function update(Request $request, $id) {
-        $service = Service::findOrFail($id);
-        $service->update($request->all());
-        return $service;
+        try {
+            $request->validate([
+                'price' => 'sometimes|numeric',
+                'name' => 'sometimes|string',
+                'description' => 'sometimes|string',
+                'status' => 'sometimes|boolean',
+            ]);
+
+            $service = Service::findOrFail($id);
+
+            $service->update($request->only(['name', 'description', 'price', 'status']));
+
+            return response()->json([
+                'message' => 'Service updated successfully',
+                'service' => $service
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error occurred',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function destroy($id) {
