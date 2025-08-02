@@ -33,8 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/bookings', [BookingController::class, 'store']);
     Route::get('/bookings', [BookingController::class, 'userBookings']);
 
-    Route::post('/services', [ServiceController::class, 'store']);
-    Route::put('/services/{id}', [ServiceController::class, 'update']);
-    Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
-    Route::get('/admin/bookings', [BookingController::class, 'allBookings']);
+    Route::middleware('admin')->group(function () {
+        Route::post('/services', [ServiceController::class, 'store']);
+        Route::put('/services/{id}', [ServiceController::class, 'update']);
+        Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
+        Route::get('/admin/bookings', [BookingController::class, 'allBookings']);
+    });
 });
